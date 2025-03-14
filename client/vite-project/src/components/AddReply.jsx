@@ -1,94 +1,33 @@
-import React, { useState } from "react";
-import { useMutation, gql } from "@apollo/client";
-
-const ADD_REPLY = gql`
-  mutation AddReply(
-    $content: String!
-    $userId: ObjectId!
-    $commentId: ObjectId!
-    $replyingTo: String
-  ) {
-    addReply(
-      content: $content
-      userId: $userId
-      commentId: $commentId
-      replyingTo: $replyingTo
-    ) {
-      id
-      content
-      createdAt
-      score
-      user {
-        id
-        username
-        imagePngUrl
-        imageWebUrl
-      }
-      replyingTo
-      replies {
-        id
-      }
-    }
-  }
-`;
-const GET_COMMENTS = gql`
-  query GetComments {
-    comments {
-      id
-      content
-      createdAt
-      score
-      user {
-        id
-        username
-        imagePngUrl
-        imageWebUrl
-      }
-      replies {
-        id
-        content
-        createdAt
-        score
-        user {
-          id
-          username
-          imagePngUrl
-          imageWebUrl
-        }
-      }
-    }
-  }
-`;
+import { useState } from "react";
+import axios from "axios";
 
 export default function AddReply({ currentUser, commentId, openReplyId }) {
   const [content, setContent] = useState("");
-  const [addReply] = useMutation(ADD_REPLY, {
-    update(cache, { data: { addReply } }) {
-      const { comments } = cache.readQuery({ query: GET_COMMENTS });
-      const updatedComments = comments.map((comment) =>
-        comment.id === commentId
-          ? { ...comment, replies: [...comment.replies, addReply] }
-          : comment
-      );
-      cache.writeQuery({
-        query: GET_COMMENTS,
-        data: { comments: updatedComments },
-      });
-    },
-  });
+  const [setFormReply, setSetFormReply] = useState(
+    {
+      content: "",
+      userId: currentUser,
+      commentId,
+      replyingTo: "",
+      score: 0,
+    }
+  );
+  const API_URL = "http://127.0.0.1/frontEndMentor/interactive-comment-section/server";
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const { data } = await addReply({
-        variables: {
-          content,
-          userId: currentUser.id.toString(),
-          commentId,
-        },
-      });
-      console.log("Reply added:", data);
-      setContent(""); // Clear the input field after successful submission
+      const { data } = await axios.post(
+        `${API_URL}/api/inscription/inscription.php`,
+        setFormReply,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      console.log(data);
+      setContent("");
     } catch (error) {
       console.error("Error adding reply:", error);
     }

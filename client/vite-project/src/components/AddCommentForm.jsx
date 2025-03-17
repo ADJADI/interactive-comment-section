@@ -1,13 +1,12 @@
 import { useState } from "react";
 import axios from "axios";
-
+import PropTypes from "prop-types";
 
 
 const AddCommentForm = ({
   username,
   imagePngUrl,
   imageWebUrl,
-  userId,
   scrollToTop,
 }) => {
   const [formData, setFormData] = useState({
@@ -16,7 +15,6 @@ const AddCommentForm = ({
     created_at: new Date(),
     score: 0,
   });
-  console.log(formData.userId);
   const API_URL = "http://127.0.0.1/frontEndMentor/interactive-comment-section/server/api/comments/create.php";
 
   const handleSubmit = async (e) => {
@@ -41,7 +39,7 @@ const AddCommentForm = ({
     <div className="flex w-full min-h-[210px] h-[210px] justify-center p-3 ">
       <form
         onSubmit={handleSubmit}
-        className=" shadow-md  bg-white w-[800px] flex gap-3 flex-col justify-around rounded-md px-5 py-4 md:flex-row"
+        className=" shadow-md bg-white w-[800px] flex gap-3 flex-col justify-around rounded-md px-5 py-4 md:flex-row"
       >
         <picture className="w-12 hidden md:block">
           <source srcSet={imageWebUrl} type="image/webp" />
@@ -80,3 +78,10 @@ const AddCommentForm = ({
 };
 
 export default AddCommentForm;
+
+AddCommentForm.propTypes = {
+  username: PropTypes.string,
+  imagePngUrl: PropTypes.string,
+  imageWebUrl: PropTypes.string,
+  scrollToTop: PropTypes.func,
+};

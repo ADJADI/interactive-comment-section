@@ -73,8 +73,16 @@ export default function User({ setIsSubmitted, onUserAdded }) {
       if (data.success) {
         alert('Registration successful');
         if (onUserAdded) {
+          const userData = {
+            id: data.user_id,
+            username: formData.username,
+            imagePngUrl: formData.image_png_url,
+            imageWebUrl: formData.image_png_url,
+            email: formData.email
+          };
+
           setIsSubmitted(true);
-          onUserAdded(data.user_id);
+          onUserAdded(userData);
         }
       } else {
         setError(data.message || 'Registration failed');

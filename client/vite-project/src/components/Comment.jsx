@@ -1,24 +1,11 @@
-import React, { useState, useRef } from "react";
+import { useState } from "react";
 import deleteLogo from "../assets/images/icon/icon-delete.svg";
 import editLogo from "../assets/images/icon/icon-edit.svg";
 import replyLogo from "../assets/images/icon/icon-reply.svg";
 import AddReply from "./AddReply";
 import { formatDistanceToNow } from "date-fns";
-import { useMutation } from "@apollo/client";
-import { gql } from "@apollo/client";
-const DELETE_COMMENT = gql`
-  mutation DeleteComment($commentId: ID!) {
-    deleteComment(commentId: $commentId)
-  }
-`;
-export const EDIT_COMMENT = gql`
-  mutation EditComment($commentId: ID!, $userId: ID!, $content: String!) {
-    editComment(commentId: $commentId, userId: $userId, content: $content) {
-      id
-      content
-    }
-  }
-`;
+import PropTypes from "prop-types";
+
 
 const Comment = ({
   comment,
@@ -31,34 +18,7 @@ const Comment = ({
   const [isEditing, setIsEditing] = useState(false);
   const [content, setContent] = useState(comment.content);
   const [openDelete, setOpenDelete] = useState(false);
-  const [editComment] = useMutation(EDIT_COMMENT, {
-    update(cache, { data: { editComment } }) {
-      cache.modify({
-        id: cache.identify(comment),
-        fields: {
-          content() {
-            return editComment.content;
-          },
-        },
-      });
-    },
-  });
 
-  const [deleteComment] = useMutation(DELETE_COMMENT, {
-    update(cache, { data: { deleteComment } }) {
-      if (deleteComment) {
-        cache.modify({
-          fields: {
-            comments(existingComments = [], { readField }) {
-              return existingComments.filter(
-                (commentRef) => comment.id !== readField("id", commentRef)
-              );
-            },
-          },
-        });
-      }
-    },
-  });
   const handleUpvote = async () => {
     try {
       await updateCommentScore({
@@ -87,33 +47,6 @@ const Comment = ({
     }
   };
 
-  const handleDelete = async () => {
-    try {
-      await deleteComment({
-        variables: {
-          commentId: comment.id,
-        },
-      });
-      alert("Comment deleted successfully");
-    } catch (error) {
-      console.error("Error deleting comment:", error.message);
-    }
-  };
-
-  const handleEdit = async () => {
-    try {
-      await editComment({
-        variables: {
-          commentId: comment.id,
-          userId: currentUser.id,
-          content: content,
-        },
-      });
-      setIsEditing(false);
-    } catch (error) {
-      console.error("Error editing comment:", error.message);
-    }
-  };
   const handleCancel = () => {
     setContent(comment.content);
     setIsEditing(false);
@@ -267,14 +200,6 @@ const Comment = ({
             ) : (
               <p className="text-dblue  text-sm">{comment.content}</p>
             )}
-            {comment.user.id === currentUser.id && isEditing && (
-              <button
-                className="bg-mblue font-semibold place-self-end  h-8 w-20 px-4 rounded-md text-white text-sm shadow-sm hover:opacity-30"
-                onClick={handleEdit}
-              >
-                UPDATE
-              </button>
-            )}
           </div>
         </div>
       </div>
@@ -319,7 +244,6 @@ const Comment = ({
               </button>
               <button
                 className="text-white z-50 font-semibold w-full rounded-lg  text-lg py-3.5 bg-sred"
-                onClick={handleDelete}
               >
                 YES, DELETE
               </button>
@@ -335,3 +259,12 @@ const Comment = ({
 };
 
 export default Comment;
+
+Comment.propTypes = {
+  comment: PropTypes.object,
+  currentUser: PropTypes.object,
+  updateCommentScore: PropTypes.func,
+  openReplyId: PropTypes.string,
+  toggleReply: PropTypes.func,
+  topRef: PropTypes.object,
+};

@@ -1,67 +1,65 @@
-import { useState, useEffect } from "react";
-import axios from "axios";
+import { useState } from "react";
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useReplyApi } from '../hooks/useReplyApi';
 import PropTypes from "prop-types";
-export default function AddReply({ currentUser, commentId, openReplyId }) {
-  const [setFormReply, setSetFormReply] = useState(
-    {
-      content: "",
-      userId: "010203",
-      commentId: "010203",
-      replyingTo: "Joel",
-      score: 0,
-    }
-  );
-  const API_URL = "http://127.0.0.1/frontEndMentor/interactive-comment-section/server";
+import defaultUserImage from "../assets/images/avatars/user.png";
+export default function AddReply({ commentId, currentUser }) {
+  const [content, setContent] = useState("");
+  const queryClient = useQueryClient();
+  const { addReply } = useReplyApi();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      await axios.post(
-        `${API_URL}/api/replies/create.php`,
-        setFormReply,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      setSetFormReply({ ...setFormReply, content: "" });
-    } catch (error) {
-      console.error("Error adding reply:", error);
+
+  const replyMutation = useMutation({
+    mutationFn: addReply,
+    onSuccess: () => {
+      setContent("");
+      queryClient.invalidateQueries({ queryKey: ['replies'] });
     }
+  });
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    if (!content.trim()) return;
+
+    replyMutation.mutate({
+      content,
+      userId: currentUser.id,
+      parentCommentId: commentId
+    });
   };
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white rounded-md p-5 ">
+    <form onSubmit={handleSubmit} className="bg-white rounded-md p-5">
       <div className="flex flex-col h-32 gap-3">
         <textarea
           className="resize-none h-full w-full focus:outline-none border border-lgray focus:border-mblue rounded-md pt-2 pl-5 md:hidden"
-          value={setFormReply.content}
-          onChange={(e) => setSetFormReply({ ...setFormReply, content: e.target.value })}
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
           placeholder="Add a reply..."
           required
         />
         <div className="flex justify-between md:h-full md:items-start">
-          {/* <picture>
+          <picture>
             <source srcSet={currentUser.imageWebUrl} type="image/webp" />
             <img
-              src={currentUser.imagePngUrl}
+              src={currentUser.imagePngUrl.length === 0 ? defaultUserImage : currentUser.imagePngUrl}
               alt={currentUser.username}
               className="h-8"
             />
-          </picture> */}
+          </picture>
           <textarea
             className="resize-none w-[80%] h-full focus:outline-none border border-lgray focus:border-mblue rounded-md pt-2 pl-5 hidden md:flex"
-            value={setFormReply.content}
-            onChange={(e) => setSetFormReply({ ...setFormReply, content: e.target.value })}
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
             placeholder="Add a reply..."
             required
           />
           <button
             type="submit"
             className="bg-mblue h-8 px-4 rounded-md text-white text-sm shadow-sm hover:opacity-30"
+            disabled={replyMutation.isPending}
           >
-            REPLY
+            {replyMutation.isPending ? 'SENDING...' : 'REPLY'}
           </button>
         </div>
       </div>
@@ -70,9 +68,8 @@ export default function AddReply({ currentUser, commentId, openReplyId }) {
 }
 
 AddReply.propTypes = {
-  currentUser: PropTypes.object,
   commentId: PropTypes.string,
-  openReplyId: PropTypes.string,
+  currentUser: PropTypes.object,
 };
 
 

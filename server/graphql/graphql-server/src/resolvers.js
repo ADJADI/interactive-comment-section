@@ -8,14 +8,14 @@ const ObjectIdScalar = new GraphQLScalarType({
   name: "ObjectId",
   description: "MongoDB ObjectId scalar type",
   parseValue(value) {
-    return new mongoose.Types.ObjectId(value); // value from the client input variables
+    return new mongoose.Types.ObjectId(value);
   },
   serialize(value) {
-    return value.toString(); // value sent to the client
+    return value.toString();
   },
   parseLiteral(ast) {
     if (ast.kind === Kind.STRING) {
-      return new mongoose.Types.ObjectId(ast.value); // ast value is always in string format
+      return new mongoose.Types.ObjectId(ast.value);
     }
     return null;
   },
@@ -74,7 +74,7 @@ const resolvers = {
       const comment = new Comment({
         content,
         user: userId,
-        replies: [], // Initialize replies as an empty array
+        replies: [],
         upvoters: [],
         downvoters: [],
       });
@@ -95,11 +95,9 @@ const resolvers = {
           throw new Error("You have already upvoted!");
         } else {
           if (hasDownvoted) {
-            // User is switching from downvote to neutral (score goes from -1 to 0)
             comment.downvoters.pull(userId);
             comment.score += 1;
           } else {
-            // User is upvoting (score goes from 0 to 1)
             comment.upvoters.push(userId);
             comment.score += 1;
           }
@@ -109,11 +107,9 @@ const resolvers = {
           throw new Error("You have already downvoted!");
         } else {
           if (hasUpvoted) {
-            // User is switching from upvote to neutral (score goes from 1 to 0)
             comment.upvoters.pull(userId);
             comment.score -= 1;
           } else {
-            // User is downvoting (score goes from 0 to -1)
             comment.downvoters.push(userId);
             comment.score -= 1;
           }

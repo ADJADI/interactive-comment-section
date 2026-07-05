@@ -1,24 +1,7 @@
 const { gql } = require("apollo-server-express");
-const { GraphQLScalarType } = require("graphql");
-const { Kind } = require("graphql/language");
 
-const ObjectIdScalar = new GraphQLScalarType({
-  name: "ObjectId",
-  description: "MongoDB ObjectId scalar type",
-  parseValue(value) {
-    return new mongoose.Types.ObjectId(value);
-  },
-  serialize(value) {
-    return value.toString();
-  },
-  parseLiteral(ast) {
-    if (ast.kind === Kind.STRING) {
-      return new mongoose.Types.ObjectId(ast.value);
-    }
-    return null;
-  },
-});
-
+// Note : le résolveur du scalaire ObjectId (parseValue/serialize/parseLiteral)
+// est défini une seule fois, dans resolvers.js, et branché ici via `scalar ObjectId`.
 const typeDefs = gql`
   scalar ObjectId
 

@@ -56,7 +56,6 @@ const UPDATE_COMMENT_SCORE = gql`
 `;
 
 const CommentList = ({ currentUser, topRef, scrollToTop }) => {
-  const [isReplyClicked, setIsReplyClicked] = useState(false);
   const { loading, error, data } = useQuery(GET_COMMENTS, {
     fetchPolicy: "network-only",
   });
@@ -65,9 +64,6 @@ const CommentList = ({ currentUser, topRef, scrollToTop }) => {
   if (loading) return <p>Loading comments...</p>;
   if (error) return <p>Error loading comments: {error.message}</p>;
 
-  const handleReplyClick = () => {
-    setIsReplyClicked(!isReplyClicked);
-  };
   const toggleReply = (commentId) => {
     setOpenReplyId(openReplyId === commentId ? null : commentId);
   };

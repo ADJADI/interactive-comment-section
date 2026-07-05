@@ -12,7 +12,7 @@ const DELETE_COMMENT = gql`
     deleteComment(commentId: $commentId, userId: $userId)
   }
 `;
-export const EDIT_COMMENT = gql`
+const EDIT_COMMENT = gql`
   mutation EditComment($commentId: ID!, $userId: ID!, $content: String!) {
     editComment(commentId: $commentId, userId: $userId, content: $content) {
       id
@@ -310,7 +310,7 @@ const Comment = ({
             <h3 className="font-bold text-xl text-dblue">Delete comment</h3>
             <p className="text-glue font-medium">
               Are you sure you want to delete this comment? This will remove the
-              comment and can't be undone.
+              comment and can&apos;t be undone.
             </p>
             <div className="flex gap-2">
               <button

@@ -18,7 +18,7 @@ jobs:
       client_image: ${{ steps.vars.outputs.client_image }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Compute lowercase image names
         id: vars
@@ -65,7 +65,7 @@ jobs:
       url: http://${{ vars.VPS_HOST }}:8080
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Copy compose file to VPS
         uses: appleboy/scp-action@v0.1.7

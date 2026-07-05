@@ -1,5 +1,5 @@
-import React, { useEffect, useState, useRef } from "react";
-import { formatDistanceToNow } from "date-fns";
+import { useState } from "react";
+import PropTypes from "prop-types";
 import topLogo from "../assets/images/icon/icons8-top-48.png";
 
 import { useQuery, gql, useMutation } from "@apollo/client";
@@ -95,6 +95,14 @@ const CommentList = ({ currentUser, topRef, scrollToTop }) => {
       </div>
     </div>
   );
+};
+
+CommentList.propTypes = {
+  currentUser: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+  }).isRequired,
+  topRef: PropTypes.shape({ current: PropTypes.any }),
+  scrollToTop: PropTypes.func.isRequired,
 };
 
 export default CommentList;

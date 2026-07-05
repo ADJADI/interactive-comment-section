@@ -1,4 +1,5 @@
 import { useState } from "react";
+import PropTypes from "prop-types";
 import { useMutation, gql } from "@apollo/client";
 
 const ADD_COMMENT = gql`
@@ -123,6 +124,14 @@ const AddCommentForm = ({
       </form>
     </div>
   );
+};
+
+AddCommentForm.propTypes = {
+  username: PropTypes.string.isRequired,
+  imagePngUrl: PropTypes.string.isRequired,
+  imageWebUrl: PropTypes.string.isRequired,
+  userId: PropTypes.string.isRequired,
+  scrollToTop: PropTypes.func.isRequired,
 };
 
 export default AddCommentForm;

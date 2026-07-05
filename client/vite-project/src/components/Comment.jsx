@@ -1,4 +1,5 @@
-import React, { useState, useRef } from "react";
+import { useState } from "react";
+import PropTypes from "prop-types";
 import deleteLogo from "../assets/images/icon/icon-delete.svg";
 import editLogo from "../assets/images/icon/icon-edit.svg";
 import replyLogo from "../assets/images/icon/icon-reply.svg";
@@ -329,4 +330,36 @@ const Comment = ({
         </div>
       )}
       {openDelete && (
-        <div className="absolute left-0 top-0 w-full h-screen bg-black opacity-50 z-40"><
+        <div
+          className="absolute left-0 top-0 w-full h-screen bg-black opacity-50 z-40"
+          onClick={toggleDeleteTab}
+        ></div>
+      )}
+    </div>
+  );
+};
+
+Comment.propTypes = {
+  comment: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    content: PropTypes.string.isRequired,
+    score: PropTypes.number,
+    createdAt: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    user: PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      username: PropTypes.string,
+      imagePngUrl: PropTypes.string,
+      imageWebUrl: PropTypes.string,
+    }).isRequired,
+    replies: PropTypes.array,
+  }).isRequired,
+  currentUser: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+  }).isRequired,
+  updateCommentScore: PropTypes.func.isRequired,
+  openReplyId: PropTypes.string,
+  toggleReply: PropTypes.func.isRequired,
+  topRef: PropTypes.shape({ current: PropTypes.any }),
+};
+
+export default Comment;

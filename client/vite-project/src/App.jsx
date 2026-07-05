@@ -1,9 +1,8 @@
-import react, { useState, useRef } from "react";
+import { useState, useRef } from "react";
 import "./styles/App.css";
 import AddCommentForm from "./components/AddCommentForm";
 import CommentList from "./components/CommentList";
 import User from "./components/User";
-import AddReply from "./components/AddReply";
 
 export default function App() {
   const [isSubmitted, setIsSubmitted] = useState(false);

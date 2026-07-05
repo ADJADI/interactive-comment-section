@@ -4,7 +4,7 @@ WORKDIR /app
 
 # Installe uniquement les dépendances de production (cache Docker sur package*.json)
 COPY package.json package-lock.json ./
-RUN npm ci --omit=dev
+RUN npm install --omit=dev
 
 COPY . .
 

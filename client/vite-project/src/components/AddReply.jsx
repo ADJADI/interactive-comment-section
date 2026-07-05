@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import { useState } from "react";
+import PropTypes from "prop-types";
 import { useMutation, gql } from "@apollo/client";
 
 const ADD_REPLY = gql`
@@ -135,3 +136,14 @@ export default function AddReply({ currentUser, commentId, openReplyId }) {
     </form>
   );
 }
+
+AddReply.propTypes = {
+  currentUser: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    username: PropTypes.string,
+    imagePngUrl: PropTypes.string,
+    imageWebUrl: PropTypes.string,
+  }).isRequired,
+  commentId: PropTypes.string.isRequired,
+  openReplyId: PropTypes.string,
+};

@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import { useState } from "react";
+import PropTypes from "prop-types";
 import { gql, useMutation } from "@apollo/client";
 import avatar1 from "../assets/images/avatars/image-amyrobson.png";
 import avatar1webp from "../assets/images/avatars/image-amyrobson.webp";
@@ -122,3 +123,8 @@ export default function User({ setIsSubmitted, onUserAdded }) {
     </form>
   );
 }
+
+User.propTypes = {
+  setIsSubmitted: PropTypes.func.isRequired,
+  onUserAdded: PropTypes.func.isRequired,
+};

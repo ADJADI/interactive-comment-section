@@ -1,29 +1,22 @@
-# Use an official node image as the base image
-FROM node:16
-
-# Set the working directory
+# --- Étape 1 : build de l'application Vite/React ---
+FROM node:22-alpine AS build
 WORKDIR /app
 
-# Copy package.json and yarn.lock into the working directory
-COPY package.json yarn.lock ./
+# Cache des dépendances : copie des manifestes avant le code source
+COPY package.json package-lock.json ./
+RUN npm ci
 
-# Install dependencies
-RUN yarn install
-
-# Copy the rest of the application code
 COPY . .
 
-# Build the app
-RUN yarn build
+# Variable d'environnement injectée au build (URL du GraphQL en prod)
+ARG VITE_GRAPHQL_URI=/graphql
+ENV VITE_GRAPHQL_URI=$VITE_GRAPHQL_URI
 
-# Use an official nginx image to serve the app
+RUN npm run build
+
+# --- Étape 2 : image finale, nginx sert les fichiers statiques ---
 FROM nginx:stable-alpine
+COPY --from=build /app/dist /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Copy the built app from the previous image
-COPY --from=0 /app/dist /usr/share/nginx/html
-
-# Expose port 80
 EXPOSE 80
-
-# Start nginx
-CMD ["nginx", "-g", "daemon off;"]

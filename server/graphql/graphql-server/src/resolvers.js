@@ -137,10 +137,15 @@ const resolvers = {
 
       return reply.populate("user");
     },
-    deleteComment: async (_, { commentId }) => {
+    deleteComment: async (_, { commentId, userId }) => {
       const comment = await Comment.findById(commentId);
       if (!comment) {
         throw new Error("Comment not found");
+      }
+
+      // Seul l'auteur du commentaire peut le supprimer
+      if (comment.user.toString() !== userId) {
+        throw new Error("You do not have permission to delete this comment");
       }
 
       await Comment.findByIdAndDelete(commentId);

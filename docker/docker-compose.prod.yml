@@ -1,11 +1,12 @@
+# Compose de production : utilise les images déjà construites et poussées sur GHCR
+# par le pipeline CI/CD (voir .github/workflows/deploy.yml), au lieu de les
+# reconstruire sur le VPS.
+
 services:
-  # Base de données NoSQL
   mongo:
     image: mongo:7
     container_name: mongo
     restart: unless-stopped
-    # Pas de port exposé sur l'hôte : seul le service "server" y accède,
-    # via le réseau interne Docker (DNS "mongo").
     volumes:
       - mongo-data:/data/db
     healthcheck:
@@ -14,10 +15,8 @@ services:
       timeout: 5s
       retries: 5
 
-  # API GraphQL (Node.js / Express / Apollo Server / Mongoose)
   server:
-    build:
-      context: ../server/graphql/graphql-server
+    image: ${SERVER_IMAGE}
     container_name: server
     restart: unless-stopped
     depends_on:
@@ -26,14 +25,10 @@ services:
     environment:
       MONGO_URI: mongodb://mongo:27017/${MONGO_DB:-interactive_comments}
       PORT: 4000
-      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:8080}
+      CORS_ORIGIN: ${CORS_ORIGIN}
 
-  # Frontend (build Vite + nginx, reverse-proxy /graphql vers "server")
   client:
-    build:
-      context: ../client/vite-project
-      args:
-        VITE_GRAPHQL_URI: /graphql
+    image: ${CLIENT_IMAGE}
     container_name: client
     restart: unless-stopped
     ports:

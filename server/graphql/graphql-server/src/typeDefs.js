@@ -60,7 +60,7 @@ const typeDefs = gql`
       commentId: ObjectId!
       replyingTo: String
     ): Comment
-    deleteComment(commentId: ID!): Boolean
+    deleteComment(commentId: ID!, userId: ID!): Boolean
     editComment(commentId: ID!, userId: ID!, content: String!): Comment
   }
 `;

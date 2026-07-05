@@ -7,8 +7,8 @@ import { formatDistanceToNow } from "date-fns";
 import { useMutation } from "@apollo/client";
 import { gql } from "@apollo/client";
 const DELETE_COMMENT = gql`
-  mutation DeleteComment($commentId: ID!) {
-    deleteComment(commentId: $commentId)
+  mutation DeleteComment($commentId: ID!, $userId: ID!) {
+    deleteComment(commentId: $commentId, userId: $userId)
   }
 `;
 export const EDIT_COMMENT = gql`
@@ -92,6 +92,7 @@ const Comment = ({
       await deleteComment({
         variables: {
           commentId: comment.id,
+          userId: currentUser.id,
         },
       });
       alert("Comment deleted successfully");
@@ -328,10 +329,4 @@ const Comment = ({
         </div>
       )}
       {openDelete && (
-        <div className="absolute left-0 top-0 w-full h-screen bg-black opacity-50 z-40"></div>
-      )}
-    </div>
-  );
-};
-
-export default Comment;
+        <div className="absolute left-0 top-0 w-full h-screen bg-black opacity-50 z-40"><
